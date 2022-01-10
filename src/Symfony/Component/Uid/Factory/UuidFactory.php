@@ -23,8 +23,8 @@ class UuidFactory
     private string $timeBasedClass;
     private string $nameBasedClass;
     private string $randomBasedClass;
-    private $timeBasedNode;
-    private $nameBasedNamespace;
+    private ?Uuid $timeBasedNode;
+    private ?Uuid $nameBasedNamespace;
 
     public function __construct(string|int $defaultClass = UuidV6::class, string|int $timeBasedClass = UuidV6::class, string|int $nameBasedClass = UuidV5::class, string|int $randomBasedClass = UuidV4::class, Uuid|string $timeBasedNode = null, Uuid|string $nameBasedNamespace = null)
     {
@@ -58,7 +58,7 @@ class UuidFactory
 
     public function timeBased(Uuid|string $node = null): TimeBasedUuidFactory
     {
-        $node ?? $node = $this->timeBasedNode;
+        $node ??= $this->timeBasedNode;
 
         if (null !== $node && !$node instanceof Uuid) {
             $node = Uuid::fromString($node);
@@ -69,7 +69,7 @@ class UuidFactory
 
     public function nameBased(Uuid|string $namespace = null): NameBasedUuidFactory
     {
-        $namespace ?? $namespace = $this->nameBasedNamespace;
+        $namespace ??= $this->nameBasedNamespace;
 
         if (null === $namespace) {
             throw new \LogicException(sprintf('A namespace should be defined when using "%s()".', __METHOD__));

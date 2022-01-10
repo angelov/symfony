@@ -13,6 +13,7 @@ namespace Symfony\Component\Messenger\Bridge\AmazonSqs\Transport;
 
 use AsyncAws\Sqs\Enum\MessageSystemAttributeName;
 use AsyncAws\Sqs\Enum\QueueAttributeName;
+use AsyncAws\Sqs\Result\ReceiveMessageResult;
 use AsyncAws\Sqs\SqsClient;
 use AsyncAws\Sqs\ValueObject\MessageAttributeValue;
 use AsyncAws\Sqs\ValueObject\MessageSystemAttributeValue;
@@ -49,8 +50,8 @@ class Connection
     ];
 
     private array $configuration;
-    private $client;
-    private $currentResponse = null;
+    private SqsClient $client;
+    private ?ReceiveMessageResult $currentResponse = null;
     /** @var array[] */
     private array $buffer = [];
     private ?string $queueUrl;
@@ -324,7 +325,7 @@ class Connection
 
         $specialHeaders = [];
         foreach ($headers as $name => $value) {
-            if ('.' === $name[0] || self::MESSAGE_ATTRIBUTE_NAME === $name || \strlen($name) > 256 || '.' === substr($name, -1) || 'AWS.' === substr($name, 0, \strlen('AWS.')) || 'Amazon.' === substr($name, 0, \strlen('Amazon.')) || preg_match('/([^a-zA-Z0-9_\.-]+|\.\.)/', $name)) {
+            if ('.' === $name[0] || self::MESSAGE_ATTRIBUTE_NAME === $name || \strlen($name) > 256 || str_ends_with($name, '.') || str_starts_with($name, 'AWS.') || str_starts_with($name, 'Amazon.') || preg_match('/([^a-zA-Z0-9_\.-]+|\.\.)/', $name)) {
                 $specialHeaders[$name] = $value;
 
                 continue;
@@ -392,6 +393,6 @@ class Connection
 
     private static function isFifoQueue(string $queueName): bool
     {
-        return self::AWS_SQS_FIFO_SUFFIX === substr($queueName, -\strlen(self::AWS_SQS_FIFO_SUFFIX));
+        return str_ends_with($queueName, self::AWS_SQS_FIFO_SUFFIX);
     }
 }

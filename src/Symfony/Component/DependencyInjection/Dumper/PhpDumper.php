@@ -69,7 +69,7 @@ class PhpDumper extends Dumper
     private ?\SplObjectStorage $inlinedDefinitions = null;
     private ?array $serviceCalls = null;
     private array $reservedVariables = ['instance', 'class', 'this', 'container'];
-    private $expressionLanguage;
+    private ExpressionLanguage $expressionLanguage;
     private ?string $targetDirRegex = null;
     private int $targetDirMaxMatches;
     private string $docStar;
@@ -90,7 +90,7 @@ class PhpDumper extends Dumper
     private string $serviceLocatorTag;
     private array $exportedVariables = [];
     private string $baseClass;
-    private $proxyDumper;
+    private ProxyDumper $proxyDumper;
 
     /**
      * {@inheritdoc}
@@ -221,7 +221,7 @@ class PhpDumper extends Dumper
             $this->addDefaultParametersMethod()
         ;
 
-        $proxyClasses = $proxyClasses ?? $this->generateProxyClasses();
+        $proxyClasses ??= $this->generateProxyClasses();
 
         if ($this->addGetService) {
             $code = preg_replace(
@@ -1802,7 +1802,7 @@ EOF;
             if ($value->hasErrors() && $e = $value->getErrors()) {
                 return sprintf('throw new RuntimeException(%s)', $this->export(reset($e)));
             }
-            if (null !== $this->definitionVariables && $this->definitionVariables->contains($value)) {
+            if ($this->definitionVariables?->contains($value)) {
                 return $this->dumpValue($this->definitionVariables[$value], $interpolate);
             }
             if ($value->getMethodCalls()) {
@@ -2123,10 +2123,10 @@ EOF;
             $export = var_export($value, true);
         }
         if ($this->asFiles) {
-            if (false !== strpos($export, '$this')) {
+            if (str_contains($export, '$this')) {
                 $export = str_replace('$this', "$'.'this", $export);
             }
-            if (false !== strpos($export, 'function () {')) {
+            if (str_contains($export, 'function () {')) {
                 $export = str_replace('function () {', "function ('.') {", $export);
             }
         }

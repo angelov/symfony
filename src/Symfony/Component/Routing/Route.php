@@ -27,7 +27,7 @@ class Route implements \Serializable
     private array $requirements = [];
     private array $options = [];
     private string $condition = '';
-    private $compiled = null;
+    private ?CompiledRoute $compiled = null;
 
     /**
      * Constructor.
@@ -433,7 +433,7 @@ class Route implements \Serializable
         if ('' !== $regex) {
             if ('^' === $regex[0]) {
                 $regex = substr($regex, 1);
-            } elseif (0 === strpos($regex, '\\A')) {
+            } elseif (str_starts_with($regex, '\\A')) {
                 $regex = substr($regex, 2);
             }
         }

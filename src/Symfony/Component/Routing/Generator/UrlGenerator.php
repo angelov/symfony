@@ -128,9 +128,7 @@ class UrlGenerator implements UrlGeneratorInterface, ConfigurableRequirementsInt
     public function generate(string $name, array $parameters = [], int $referenceType = self::ABSOLUTE_PATH): string
     {
         $route = null;
-        $locale = $parameters['_locale']
-            ?? $this->context->getParameter('_locale')
-            ?: $this->defaultLocale;
+        $locale = $parameters['_locale'] ?? $this->context->getParameter('_locale') ?: $this->defaultLocale;
 
         if (null !== $locale) {
             do {
@@ -140,7 +138,7 @@ class UrlGenerator implements UrlGeneratorInterface, ConfigurableRequirementsInt
             } while (false !== $locale = strstr($locale, '_', true));
         }
 
-        if (null === $route = $route ?? $this->routes->get($name)) {
+        if (null === $route ??= $this->routes->get($name)) {
             throw new RouteNotFoundException(sprintf('Unable to generate a URL for the named route "%s" as such route does not exist.', $name));
         }
 
@@ -192,9 +190,7 @@ class UrlGenerator implements UrlGeneratorInterface, ConfigurableRequirementsInt
                             throw new InvalidParameterException(strtr($message, ['{parameter}' => $varName, '{route}' => $name, '{expected}' => $token[2], '{given}' => $mergedParams[$varName]]));
                         }
 
-                        if ($this->logger) {
-                            $this->logger->error($message, ['parameter' => $varName, 'route' => $name, 'expected' => $token[2], 'given' => $mergedParams[$varName]]);
-                        }
+                        $this->logger?->error($message, ['parameter' => $varName, 'route' => $name, 'expected' => $token[2], 'given' => $mergedParams[$varName]]);
 
                         return '';
                     }
@@ -247,9 +243,7 @@ class UrlGenerator implements UrlGeneratorInterface, ConfigurableRequirementsInt
                             throw new InvalidParameterException(strtr($message, ['{parameter}' => $token[3], '{route}' => $name, '{expected}' => $token[2], '{given}' => $mergedParams[$token[3]]]));
                         }
 
-                        if ($this->logger) {
-                            $this->logger->error($message, ['parameter' => $token[3], 'route' => $name, 'expected' => $token[2], 'given' => $mergedParams[$token[3]]]);
-                        }
+                        $this->logger?->error($message, ['parameter' => $token[3], 'route' => $name, 'expected' => $token[2], 'given' => $mergedParams[$token[3]]]);
 
                         return '';
                     }

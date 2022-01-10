@@ -39,7 +39,7 @@ use Twig\Source;
 #[AsCommand(name: 'lint:twig', description: 'Lint a Twig template and outputs encountered errors')]
 class LintCommand extends Command
 {
-    private $twig;
+    private Environment $twig;
     private string $format;
 
     public function __construct(Environment $twig)
@@ -230,9 +230,7 @@ EOF
     {
         $line = $exception->getTemplateLine();
 
-        if ($githubReporter) {
-            $githubReporter->error($exception->getRawMessage(), $file, $line <= 0 ? null : $line);
-        }
+        $githubReporter?->error($exception->getRawMessage(), $file, $line <= 0 ? null : $line);
 
         if ($file) {
             $output->text(sprintf('<error> ERROR </error> in %s (line %s)', $file, $line));

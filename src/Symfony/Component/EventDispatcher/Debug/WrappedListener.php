@@ -26,10 +26,10 @@ final class WrappedListener
     private string $name;
     private bool $called = false;
     private bool $stoppedPropagation = false;
-    private $stopwatch;
-    private $dispatcher;
+    private Stopwatch $stopwatch;
+    private ?EventDispatcherInterface $dispatcher;
     private string $pretty;
-    private $stub;
+    private ClassStub|string $stub;
     private ?int $priority = null;
     private static bool $hasClassStub;
 
@@ -93,7 +93,7 @@ final class WrappedListener
 
         return [
             'event' => $eventName,
-            'priority' => null !== $this->priority ? $this->priority : (null !== $this->dispatcher ? $this->dispatcher->getListenerPriority($eventName, $this->listener) : null),
+            'priority' => $this->priority ?? $this->dispatcher?->getListenerPriority($eventName, $this->listener),
             'pretty' => $this->pretty,
             'stub' => $this->stub,
         ];

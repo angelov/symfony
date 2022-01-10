@@ -23,7 +23,7 @@ use Symfony\Component\Messenger\Transport\TransportInterface;
  */
 class DoctrineTransportFactory implements TransportFactoryInterface
 {
-    private $registry;
+    private ConnectionRegistry $registry;
 
     public function __construct(ConnectionRegistry $registry)
     {
@@ -54,7 +54,7 @@ class DoctrineTransportFactory implements TransportFactoryInterface
 
     public function supports(string $dsn, array $options): bool
     {
-        return 0 === strpos($dsn, 'doctrine://');
+        return str_starts_with($dsn, 'doctrine://');
     }
 }
 

@@ -65,7 +65,7 @@ class PdoSessionHandler extends AbstractSessionHandler
      */
     public const LOCK_TRANSACTIONAL = 2;
 
-    private $pdo;
+    private \PDO $pdo;
 
     /**
      * DSN string or null for session.save_path or false when lazy connection disabled.
@@ -454,7 +454,7 @@ class PdoSessionHandler extends AbstractSessionHandler
             // If "unix_socket" is not in the query, we continue with the same process as pgsql
             // no break
             case 'pgsql':
-                $dsn ?? $dsn = 'pgsql:';
+                $dsn ??= 'pgsql:';
 
                 if (isset($params['host']) && '' !== $params['host']) {
                     $dsn .= 'host='.$params['host'].';';

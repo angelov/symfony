@@ -39,11 +39,11 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 class Worker
 {
     private array $receivers;
-    private $bus;
-    private $eventDispatcher;
-    private $logger;
+    private MessageBusInterface $bus;
+    private ?EventDispatcherInterface $eventDispatcher;
+    private ?LoggerInterface $logger;
     private bool $shouldStop = false;
-    private $metadata;
+    private WorkerMetadata $metadata;
     private array $acks = [];
     private \SplObjectStorage $unacks;
 
@@ -244,9 +244,7 @@ class Worker
 
     public function stop(): void
     {
-        if (null !== $this->logger) {
-            $this->logger->info('Stopping worker.', ['transport_names' => $this->metadata->getTransportNames()]);
-        }
+        $this->logger?->info('Stopping worker.', ['transport_names' => $this->metadata->getTransportNames()]);
 
         $this->shouldStop = true;
     }

@@ -39,9 +39,9 @@ class MemcachedAdapter extends AbstractAdapter
         \Memcached::OPT_SERIALIZER => \Memcached::SERIALIZER_PHP,
     ];
 
-    private $marshaller;
-    private $client;
-    private $lazyClient;
+    private MarshallerInterface $marshaller;
+    private \Memcached $client;
+    private \Memcached $lazyClient;
 
     /**
      * Using a MemcachedAdapter with a TagAwareAdapter for storing tags is discouraged.
@@ -115,7 +115,7 @@ class MemcachedAdapter extends AbstractAdapter
                 if (\is_array($dsn)) {
                     continue;
                 }
-                if (0 !== strpos($dsn, 'memcached:')) {
+                if (!str_starts_with($dsn, 'memcached:')) {
                     throw new InvalidArgumentException(sprintf('Invalid Memcached DSN: "%s" does not start with "memcached:".', $dsn));
                 }
                 $params = preg_replace_callback('#^memcached:(//)?(?:([^@]*+)@)?#', function ($m) use (&$username, &$password) {

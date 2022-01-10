@@ -77,18 +77,18 @@ class Connection
     private array $connectionOptions;
     private array $exchangeOptions;
     private array $queuesOptions;
-    private $amqpFactory;
+    private AmqpFactory $amqpFactory;
     private mixed $autoSetupExchange;
     private mixed $autoSetupDelayExchange;
-    private $amqpChannel;
-    private $amqpExchange;
+    private \AMQPChannel $amqpChannel;
+    private \AMQPExchange $amqpExchange;
 
     /**
      * @var \AMQPQueue[]
      */
     private array $amqpQueues = [];
 
-    private $amqpDelayExchange;
+    private \AMQPExchange $amqpDelayExchange;
 
     public function __construct(array $connectionOptions, array $exchangeOptions, array $queuesOptions, AmqpFactory $amqpFactory = null)
     {
@@ -165,7 +165,7 @@ class Connection
             $parsedUrl = [];
         }
 
-        $useAmqps = 0 === strpos($dsn, 'amqps://');
+        $useAmqps = str_starts_with($dsn, 'amqps://');
         $pathParts = isset($parsedUrl['path']) ? explode('/', trim($parsedUrl['path'], '/')) : [];
         $exchangeName = $pathParts[1] ?? 'messages';
         parse_str($parsedUrl['query'] ?? '', $parsedQuery);
@@ -556,7 +556,7 @@ class Connection
 
     private function getRoutingKeyForMessage(?AmqpStamp $amqpStamp): ?string
     {
-        return (null !== $amqpStamp ? $amqpStamp->getRoutingKey() : null) ?? $this->getDefaultPublishRoutingKey();
+        return $amqpStamp?->getRoutingKey() ?? $this->getDefaultPublishRoutingKey();
     }
 }
 

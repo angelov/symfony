@@ -189,7 +189,7 @@ trait HttpClientTrait
         }
 
         // Option "query" is never inherited from defaults
-        $options['query'] = $options['query'] ?? [];
+        $options['query'] ??= [];
 
         foreach ($defaultOptions as $k => $v) {
             if ('normalized_headers' !== $k && !isset($options[$k])) {
@@ -384,7 +384,7 @@ trait HttpClientTrait
      */
     private static function jsonEncode(mixed $value, int $flags = null, int $maxDepth = 512): string
     {
-        $flags = $flags ?? (\JSON_HEX_TAG | \JSON_HEX_APOS | \JSON_HEX_AMP | \JSON_HEX_QUOT | \JSON_PRESERVE_ZERO_FRACTION);
+        $flags ??= \JSON_HEX_TAG | \JSON_HEX_APOS | \JSON_HEX_AMP | \JSON_HEX_QUOT | \JSON_PRESERVE_ZERO_FRACTION;
 
         try {
             $value = json_encode($value, $flags | \JSON_THROW_ON_ERROR, $maxDepth);
@@ -424,7 +424,7 @@ trait HttpClientTrait
             } else {
                 if (null === $url['path']) {
                     $url['path'] = $base['path'];
-                    $url['query'] = $url['query'] ?? $base['query'];
+                    $url['query'] ??= $base['query'];
                 } else {
                     if ('/' !== $url['path'][0]) {
                         if (null === $base['path']) {
@@ -620,7 +620,7 @@ trait HttpClientTrait
             throw new TransportException(sprintf('Unsupported proxy scheme "%s": "http" or "https" expected.', $proxy['scheme']));
         }
 
-        $noProxy = $noProxy ?? $_SERVER['no_proxy'] ?? $_SERVER['NO_PROXY'] ?? '';
+        $noProxy ??= $_SERVER['no_proxy'] ?? $_SERVER['NO_PROXY'] ?? '';
         $noProxy = $noProxy ? preg_split('/[\s,]+/', $noProxy) : [];
 
         return [

@@ -30,8 +30,8 @@ use Symfony\Component\DependencyInjection\Reference;
  */
 class AnalyzeServiceReferencesPass extends AbstractRecursivePass
 {
-    private $graph;
-    private $currentDefinition = null;
+    private ServiceReferenceGraph $graph;
+    private ?Definition $currentDefinition = null;
     private bool $onlyConstructorArguments;
     private bool $hasProxyDumper;
     private bool $lazy;
@@ -98,7 +98,7 @@ class AnalyzeServiceReferencesPass extends AbstractRecursivePass
                 $targetId,
                 $targetDefinition,
                 $value,
-                $this->lazy || ($this->hasProxyDumper && $targetDefinition && $targetDefinition->isLazy()),
+                $this->lazy || ($this->hasProxyDumper && $targetDefinition?->isLazy()),
                 ContainerInterface::IGNORE_ON_UNINITIALIZED_REFERENCE === $value->getInvalidBehavior(),
                 $this->byConstructor
             );
@@ -110,7 +110,7 @@ class AnalyzeServiceReferencesPass extends AbstractRecursivePass
                     $targetId,
                     $targetDefinition,
                     $value,
-                    $this->lazy || ($targetDefinition && $targetDefinition->isLazy()),
+                    $this->lazy || $targetDefinition?->isLazy(),
                     true
                );
             }

@@ -22,7 +22,7 @@ use Symfony\Component\Messenger\Event\WorkerRunningEvent;
 class StopWorkerOnMemoryLimitListener implements EventSubscriberInterface
 {
     private int $memoryLimit;
-    private $logger;
+    private ?LoggerInterface $logger;
     private \Closure $memoryResolver;
 
     public function __construct(int $memoryLimit, LoggerInterface $logger = null, callable $memoryResolver = null)
@@ -39,9 +39,7 @@ class StopWorkerOnMemoryLimitListener implements EventSubscriberInterface
         $usedMemory = $memoryResolver();
         if ($usedMemory > $this->memoryLimit) {
             $event->getWorker()->stop();
-            if (null !== $this->logger) {
-                $this->logger->info('Worker stopped due to memory limit of {limit} bytes exceeded ({memory} bytes used)', ['limit' => $this->memoryLimit, 'memory' => $usedMemory]);
-            }
+            $this->logger?->info('Worker stopped due to memory limit of {limit} bytes exceeded ({memory} bytes used)', ['limit' => $this->memoryLimit, 'memory' => $usedMemory]);
         }
     }
 
